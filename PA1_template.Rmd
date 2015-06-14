@@ -4,29 +4,78 @@ author: "Jad Melki"
 date: "June 14, 2015"
 output: html_document
 ---
+# Loading and Processing the Data 
 
-Read the data.frame using read.csv()
+1. Read the data frame. 
 ``` {r} 
 raw.data <- read.csv("activity.csv")
 ```
 
-## Use dplyr package for efficient filtering and display
+2. Use dplyr and plyr packages for efficient filtering and displaying.
+``` {r}
 library(dplyr)
 library(plyr)
 data <- tbl_df(raw.data)
+```
 
-## Calculate the total number of steps taken per day. draw a cross-tabulation. 
+# What is the mean total number of steps taken per day?
+
+1. Produce a cross-tabulation that calculates the total number of steps taken per day. 
+``` {r} 
 xtabs(steps ~ date, data=data)
+```
 
+2. Make a histogram of the total number of steps taken each day
+``` {r} 
+hist(xtabs(steps ~ date, data=data))
+```
 
+3. Calculate mean number of steps taken per day
+``` {r}
+with(data, mean(steps, na.rm=TRUE))
+```
+
+4. Calculate median number of steps taken per day
+``` {r}
+median(as.vector((xtabs(steps ~ date, data=data))))
+```
+
+# What is the average daily activity pattern?
+
+1. Make a time series plot of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
 ```{r}
-summary(cars)
+data.intervals <- ddply(data, .(interval), summarise, mean(steps, na.rm=TRUE))
+plot(data.intervals, type="l")
 ```
 
-You can also embed plots, for example:
-
-```{r, echo=FALSE}
-plot(cars)
+2. Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
+```{r}
+data.intervals.max <- filter(data.intervals, data.intervals[,2]==max(data.intervals[,2]))
+as.numeric(data.intervals.max$interval)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+# Imputing missing values
+
+1. Calculate and report the total number of missing values in the dataset
+```{r}
+with(data, sum(is.na(steps)))
+```
+
+2. Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval.
+```{r}
+
+```
+
+3. Create a new dataset that is equal to the original dataset but with the missing data filled in.
+```{r}
+
+```
+
+4. Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
+```{r}
+
+```
+
+# Are there differences in activity patterns between weekdays and weekends?
+
+
