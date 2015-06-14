@@ -61,20 +61,59 @@ as.numeric(data.intervals.max$interval)
 with(data, sum(is.na(steps)))
 ```
 
-2. Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval.
-```{r}
-
-```
+2. Devise a strategy for filling in all of the missing values in the dataset. 
+My strategy is to use the mean for that day to replace the NAs of that day. 
 
 3. Create a new dataset that is equal to the original dataset but with the missing data filled in.
-```{r}
 
+I first create a cross-tabulation of the means for each day. Then copy the original data frame "data" into "data1". The create a loop that will replace the NA for each day with the mean steps for that day. 
+
+```{r}
+mean.steps <- xtabs(steps~date,aggregate(steps~date,data,mean))
+data1 <- data
+for (i in 1:61) 
+  {
+  filter(data1, date==names(mean.steps)[i])
+  data1[is.na(data1)]<-mean.steps[i]
+  }
 ```
 
-4. Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
+4a. Make a histogram of the total number of steps taken each day. Do these values differ from the estimates from the first part of the assignment?
+Both plots seem identical with no change occuring from the imputation of the NAs.
 ```{r}
-
+par(mfcol= c(2,1))
+hist(xtabs(steps ~ date, data=data))
+hist(xtabs(steps ~ date, data=data1))
 ```
+
+4b. Calculate and report the mean total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment?
+There is a 5.1 difference between the means before and after imputation.
+
+The mean number of steps taken per day before imputation is: 
+``` {r}
+with(data, mean(steps, na.rm=TRUE))
+```
+The mean number of steps taken per day after imputation is: 
+``` {r}
+with(data1, mean(steps, na.rm=TRUE))
+```
+
+4c. Calculate and report the median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment?
+There is no difference in between the medians before and after imputation.
+
+The median number of steps taken per day before imputation is: 
+``` {r}
+median(as.vector((xtabs(steps ~ date, data=data))))
+```
+
+The median number of steps taken per day after imputation is: 
+``` {r}
+median(as.vector((xtabs(steps ~ date, data=data1))))
+```
+
+What is the impact of imputing missing data on the estimates of the total daily number of steps?
+There is a small impact on the mean steps per day but not on the median nor on the daily total steps. 
+
 
 # Are there differences in activity patterns between weekdays and weekends?
 
